@@ -40,8 +40,8 @@ function gotStream(stream) {
     const track = stream.getVideoTracks()[0];
 
     //Create image capture object and get camera capabilities
-    const imageCapture = new ImageCapture(track)
-    const photoCapabilities = imageCapture.getPhotoCapabilities().then(() => {
+    const imageCapture = new ImageCapture(track);
+    const photoCapabilities = imageCapture.getPhotoCapabilities().then(function () {
         //todo: check if camera has a torch
         //let there be light!
         var btn = document.querySelector('.switch');
@@ -50,7 +50,7 @@ function gotStream(stream) {
                 advanced: [{torch: true}]
             });
         });
-    }
+    });
     // Refresh button list in case labels have become available
     return navigator.mediaDevices.enumerateDevices();
 }
