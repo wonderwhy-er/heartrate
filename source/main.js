@@ -1,4 +1,3 @@
-
 var videoElement = document.querySelector('video');
 var videoSelect = document.querySelector('select#videoSource');
 var selectors = [videoSelect];
@@ -38,6 +37,20 @@ navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 function gotStream(stream) {
     window.stream = stream; // make stream available to console
     videoElement.srcObject = stream;
+    const track = stream.getVideoTracks()[0];
+
+    //Create image capture object and get camera capabilities
+    const imageCapture = new ImageCapture(track)
+    const photoCapabilities = imageCapture.getPhotoCapabilities().then(() => {
+        //todo: check if camera has a torch
+        //let there be light!
+        var btn = document.querySelector('.switch');
+        btn.addEventListener('click', function () {
+            track.applyConstraints({
+                advanced: [{torch: true}]
+            });
+        });
+    }
     // Refresh button list in case labels have become available
     return navigator.mediaDevices.enumerateDevices();
 }
@@ -99,12 +112,12 @@ function getImageValue() {
 }
 
 
-function getPolyVal(x1,y1,x2,y2,x3,y3,x) {
-    return ((x-x2)*(x-x3)*y1)/((x1-x2)*(x1-x3)) + ((x-x1)*(x-x3)*y2)/((x2-x1)*(x2-x3)) +((x-x2)*(x-x1)*y3)/((x3-x2)*(x3-x1));
+function getPolyVal(x1, y1, x2, y2, x3, y3, x) {
+    return ((x - x2) * (x - x3) * y1) / ((x1 - x2) * (x1 - x3)) + ((x - x1) * (x - x3) * y2) / ((x2 - x1) * (x2 - x3)) + ((x - x2) * (x - x1) * y3) / ((x3 - x2) * (x3 - x1));
 }
 
-function getPolyMaxPoint(x1,y1,x2,y2,x3,y3) {
-    return ((-1)*(x1-x2)*(x1-x3)*(x2-x3))*(((x2+x3)*y1)/((x1-x2)*(x1-x3)) + ((x1+x3)*y2)/((x2-x1)*(x2-x3)) + ((x2+x1)*y3)/((x3-x2)*(x3-x1)))/(2*((x1-x3)*(y2) - (x2-x3)*(y1) - (x1-x2)*(y3)))
+function getPolyMaxPoint(x1, y1, x2, y2, x3, y3) {
+    return ((-1) * (x1 - x2) * (x1 - x3) * (x2 - x3)) * (((x2 + x3) * y1) / ((x1 - x2) * (x1 - x3)) + ((x1 + x3) * y2) / ((x2 - x1) * (x2 - x3)) + ((x2 + x1) * y3) / ((x3 - x2) * (x3 - x1))) / (2 * ((x1 - x3) * (y2) - (x2 - x3) * (y1) - (x1 - x2) * (y3)))
 }
 
 for (var i = 0; i < 10; i++) {
@@ -115,21 +128,21 @@ for (var i = 0; i < 10; i++) {
     var y2 = Math.random();
     var y3 = Math.random();
 
-    if(
-        getPolyVal(x1,y1,x2,y2,x3,y3,x1)!=y1 ||
-        getPolyVal(x1,y1,x2,y2,x3,y3,x2)!=y2 ||
-        getPolyVal(x1,y1,x2,y2,x3,y3,x3)!=y3
+    if (
+        getPolyVal(x1, y1, x2, y2, x3, y3, x1) != y1 ||
+        getPolyVal(x1, y1, x2, y2, x3, y3, x2) != y2 ||
+        getPolyVal(x1, y1, x2, y2, x3, y3, x3) != y3
     ) {
         throw(new Error('ups'));
     } else {
         console.log('poly ok');
     }
 
-    var maxX = getPolyMaxPoint(x1,y1,x2,y2,x3,y3);
-    var maxY = getPolyVal(x1,y1,x2,y2,x3,y3,maxX);
-    var stepLeft = getPolyVal(x1,y1,x2,y2,x3,y3,maxX-0.1);
-    var stepRight = getPolyVal(x1,y1,x2,y2,x3,y3,maxX+0.1);
-    if((maxY-stepLeft)*(maxY-stepRight)<0) {
+    var maxX = getPolyMaxPoint(x1, y1, x2, y2, x3, y3);
+    var maxY = getPolyVal(x1, y1, x2, y2, x3, y3, maxX);
+    var stepLeft = getPolyVal(x1, y1, x2, y2, x3, y3, maxX - 0.1);
+    var stepRight = getPolyVal(x1, y1, x2, y2, x3, y3, maxX + 0.1);
+    if ((maxY - stepLeft) * (maxY - stepRight) < 0) {
         throw(new Error('ups'));
     }
 }
@@ -142,7 +155,7 @@ function checkBeats(current) {
         var change = dif1 * dif2;
         if (dif1 * dif2 < 0) {
             result = dif2 / Math.abs(dif2);
-            var time = getPolyMaxPoint(first.time,first.value,second.time,second.value,current.time,current.value);
+            var time = getPolyMaxPoint(first.time, first.value, second.time, second.value, current.time, current.value);
         }
     }
     first = second;
@@ -161,23 +174,24 @@ function frame() {
     buffer.push(currentLight);
     buffer = buffer.splice(Math.max(0, buffer.length - Number(bufferSize.value)), buffer.length);
 
-    var smoothLight = buffer.reduce((sum, value) => sum + value, 0) / buffer.length;
+    var smoothLight = buffer.reduce((sum, value) = > sum + value, 0
+) /
+    buffer.length;
     light.append(time, smoothLight);
     var beat = checkBeats({
         time: time,
         value: smoothLight
     });
     var beatsPerSec;
-    if( beat.sign>0) {
-        if(lastPositiveBeat) {
-            beatsPerSec = 60000/(beat.time - lastPositiveBeat.time);
-            rate.append(beat.time,beatsPerSec);
+    if (beat.sign > 0) {
+        if (lastPositiveBeat) {
+            beatsPerSec = 60000 / (beat.time - lastPositiveBeat.time);
+            rate.append(beat.time, beatsPerSec);
             timeDiv.innerHTML = beatsPerSec;
         }
         lastPositiveBeat = beat;
     }
-    beats.append(time, beat ? beat.sign : 0 );
-
+    beats.append(time, beat ? beat.sign : 0);
 
 
     requestAnimationFrame(frame);
