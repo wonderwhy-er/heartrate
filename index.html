@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)https://webrtc.github.io/samples/src/content/devices/input-output/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="description" content="WebRTC code samples">
+  <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+  <meta itemprop="description" content="Client-side WebRTC code samples">
+  <meta itemprop="image" content="../../../images/webrtc-icon-192x192.png">
+  <meta itemprop="name" content="WebRTC code samples">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta id="theme-color" name="theme-color" content="#ffffff">
+
+  <!--<base target="_blank">--><base href="." target="_blank">
+
+  <title>Select audio and video sources</title>
+
+  <link href="source/css.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="source/main.css">
+
+  <style>
+    div.select {
+      display: inline-block;
+      margin: 0 0 1em 0;
+    }
+    p.small {
+      font-size: 0.7em;
+    }
+    label {
+      width: 12em;
+      display: inline-block;
+    }
+  </style>
+
+<body>
+  <div id="container">
+    <div class="select">
+      <label for="videoSource">Video source: </label><select id="videoSource"></select>
+    </div>
+    <input id='bufferSize' value='10' type="number">
+    <video id="video" autoplay=""></video>
+    <canvas id="c"></canvas>
+
+    <canvas id="lightChart" width="400" height="100"></canvas>
+    <div></div>
+    <canvas id="beatChart" width="400" height="100"></canvas>
+    <div></div>
+    <canvas id="rateChart" width="400" height="100"></canvas>
+    <div id="time"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothie/1.27.0/smoothie.min.js"></script>
+  <script src="source/common.js"></script>
+  <script src="source/main.js"></script>
+</body></html>
