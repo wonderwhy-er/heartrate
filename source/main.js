@@ -174,9 +174,7 @@ function frame() {
     buffer.push(currentLight);
     buffer = buffer.splice(Math.max(0, buffer.length - Number(bufferSize.value)), buffer.length);
 
-    var smoothLight = buffer.reduce((sum, value) = > sum + value, 0
-) /
-    buffer.length;
+    var smoothLight = buffer.reduce((sum, value) => sum + value, 0) / buffer.length;
     light.append(time, smoothLight);
     var beat = checkBeats({
         time: time,
