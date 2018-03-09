@@ -189,7 +189,8 @@ function frame() {
         time: time,
         value: smoothLight
     });
-    //TODO calculate dispersion
+    //TODO try furier transform for better precision heartrate measuring
+    //TODO think of way to find dynamic size of beats and ignore ones that are way smaller
     var beatsPerSec;
     if (beat.sign > 0) {
         if (lastPositiveBeat) {
