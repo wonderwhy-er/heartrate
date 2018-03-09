@@ -192,6 +192,7 @@ function frame() {
         if (lastPositiveBeat) {
             beatsPerSec = 60000 / (beat.time - lastPositiveBeat.time);
             rate.append(beat.time, beatsPerSec);
+            window.navigator.vibrate(20);
             timeDiv.innerHTML = beatsPerSec;
         }
         lastPositiveBeat = beat;
