@@ -187,18 +187,22 @@ function frame() {
         time: time,
         value: smoothLight
     });
+
     var beatsPerSec;
     if (beat.sign > 0) {
         if (lastPositiveBeat) {
             beatsPerSec = 60000 / (beat.time - lastPositiveBeat.time);
-            rate.append(beat.time, beatsPerSec);
-            window.navigator.vibrate(20);
-            timeDiv.innerHTML = beatsPerSec;
+            if(beatsPerSec<200) {
+                rate.append(beat.time, beatsPerSec);
+                window.navigator.vibrate(20);
+                timeDiv.innerHTML = beatsPerSec;
+                beats.append(time, beat ? beat.sign : 0);
+                lastPositiveBeat = beat;
+            }
+        } else {
+            lastPositiveBeat = beat;
         }
-        lastPositiveBeat = beat;
     }
-    beats.append(time, beat ? beat.sign : 0);
-
 
     requestAnimationFrame(frame);
 }
