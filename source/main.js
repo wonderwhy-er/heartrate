@@ -168,11 +168,13 @@ function checkBeats(current) {
     second = current;
     return {
         sign: result,
-        time: time
+        time: time,
+        value: current
     };
 }
 
 var lastPositiveBeat;
+var beatsDiff = [];
 
 function frame() {
     var time = new Date().getTime();
@@ -187,21 +189,28 @@ function frame() {
         time: time,
         value: smoothLight
     });
-
+    //TODO calculate dispersion
     var beatsPerSec;
     if (beat.sign > 0) {
         if (lastPositiveBeat) {
             beatsPerSec = 60000 / (beat.time - lastPositiveBeat.time);
-            if(beatsPerSec<200) {
+            var diffHistory = beatsDiff.reduce((v, c) => v + c, 0) / beatsDiff.length;
+            var currentDif = Math.abs(beat.value - lastPositiveBeat.value);
+
+            if (beatsPerSec < 200) {
                 rate.append(beat.time, beatsPerSec);
                 window.navigator.vibrate(20);
                 timeDiv.innerHTML = beatsPerSec;
                 beats.append(time, beat ? beat.sign : 0);
+                beatsDiff.push(currentDif);
+                beatsDiff = beatsDiff.splice(Math.max(0, beatsDiff.length - 10), beatsDiff.length);
                 lastPositiveBeat = beat;
             }
         } else {
             lastPositiveBeat = beat;
         }
+    } else if (beat.sign < 0) {
+        beats.append(time, beat ? beat.sign : 0);
     }
 
     requestAnimationFrame(frame);
