@@ -48,16 +48,16 @@ function gotStream(stream) {
     log('got stream');
     //Create image capture object and get camera capabilities
     const imageCapture = new ImageCapture(track);
-    const photoCapabilities = imageCapture.getPhotoCapabilities().then(function (photoCapabilities) {
+    return imageCapture.getPhotoCapabilities().then(function (photoCapabilities) {
         //todo: check if camera has a torch
         //let there be light!
         log('got capabilities', photoCapabilities);
-        track.applyConstraints({
+        return track.applyConstraints({
             advanced: [{torch: true}]
         });
+    }).then(() => {
+        return navigator.mediaDevices.enumerateDevices();
     });
-    // Refresh button list in case labels have become available
-    return navigator.mediaDevices.enumerateDevices();
 }
 
 function start() {
@@ -84,7 +84,7 @@ videoSelect.onchange = start;
 start();
 
 function handleError(error) {
-    alert('navigator.getUserMedia error: ' + error.name + error.message);
+    log('error: ' + error.name + ' ' + error.message);
 }
 
 var v = videoElement;
