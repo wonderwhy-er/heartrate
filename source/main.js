@@ -2,7 +2,14 @@ var videoElement = document.querySelector('video');
 var videoSelect = document.querySelector('select#videoSource');
 var selectors = [videoSelect];
 
+var logDiv = document.getElementById('log');
+
+function log() {
+    logDiv.innerText += '\n' + JSON.stringify(arguments, null, '\t');
+}
+
 function gotDevices(deviceInfos) {
+    log('got devices');
     // Handles being called several times to update labels. Preserve values.
     var values = selectors.map(function (select) {
         return select.value;
@@ -25,8 +32,8 @@ function gotDevices(deviceInfos) {
     }
     selectors.forEach(function (select, selectorIndex) {
         if (Array.prototype.slice.call(select.childNodes).some(function (n) {
-                return n.value === values[selectorIndex];
-            })) {
+            return n.value === values[selectorIndex];
+        })) {
             select.value = values[selectorIndex];
         }
     });
@@ -38,17 +45,15 @@ function gotStream(stream) {
     window.stream = stream; // make stream available to console
     videoElement.srcObject = stream;
     const track = stream.getVideoTracks()[0];
-
+    log('got stream');
     //Create image capture object and get camera capabilities
     const imageCapture = new ImageCapture(track);
-    const photoCapabilities = imageCapture.getPhotoCapabilities().then(function () {
+    const photoCapabilities = imageCapture.getPhotoCapabilities().then(function (photoCapabilities) {
         //todo: check if camera has a torch
         //let there be light!
-        var btn = document.querySelector('.switch');
-        btn.addEventListener('click', function () {
-            track.applyConstraints({
-                advanced: [{torch: true}]
-            });
+        log('got capabilities', photoCapabilities);
+        track.applyConstraints({
+            advanced: [{torch: true}]
         });
     });
     // Refresh button list in case labels have become available
@@ -69,6 +74,7 @@ function start() {
             height: {exact: 180}
         }
     };
+    log('getting streams');
     navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
 }
 
@@ -167,6 +173,7 @@ function checkBeats(current) {
 }
 
 var lastPositiveBeat;
+
 function frame() {
     var time = new Date().getTime();
     var currentLight = getImageValue();
@@ -194,16 +201,17 @@ function frame() {
 
     requestAnimationFrame(frame);
 }
+
 frame();
 
 var lightChart = new SmoothieChart();
 lightChart.addTimeSeries(light, {strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2});
-lightChart.streamTo(document.getElementById("lightChart"), 30);
+lightChart.streamTo(document.getElementById('lightChart'), 30);
 
 var beatChart = new SmoothieChart();
 beatChart.addTimeSeries(beats, {strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2});
-beatChart.streamTo(document.getElementById("beatChart"), 30);
+beatChart.streamTo(document.getElementById('beatChart'), 30);
 
 var rateChart = new SmoothieChart();
 rateChart.addTimeSeries(rate, {strokeStyle: 'rgba(0, 255, 0, 1)', fillStyle: 'rgba(0, 255, 0, 0.2)', lineWidth: 2});
-rateChart.streamTo(document.getElementById("rateChart"), 30);
+rateChart.streamTo(document.getElementById('rateChart'), 30);
